@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   Image,
 } from 'react-native';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import UserActions from '../../components/user-actions';
 import { useRequest } from '../../hooks/use-request';
@@ -14,22 +14,44 @@ import { useRequest } from '../../hooks/use-request';
 const dimensions = Dimensions.get('window');
 
 export default function FollowingScreen() {
+  const [userPressed, setUserPressed] = useState(false);
   const { makeRequest, data, error, isLoading } = useRequest();
 
   useEffect(() => {
     makeRequest('get', '/following');
   }, []);
 
-  console.log('data', data);
   return (
     <View style={{ flex: 1 }}>
-      <View style={{ flex: 1 }} />
+      <View style={{ flex: 1, padding: 16 }}>
+        <Text style={{ fontSize: 20 }}>
+          {userPressed ? data?.flashcard_front : ''}
+        </Text>
+      </View>
       <View style={styles.bottom}>
         <View style={styles.bottomLeft}>
           <View>
-            <Text style={{ fontSize: 20 }}>
-              {isLoading ? 'Loading...' : data?.flashcard_front}
-            </Text>
+            {userPressed && (
+              <Text
+                style={{
+                  fontSize: 14,
+                  fontWeight: '500',
+                  color: 'green',
+                  marginBottom: 5,
+                }}
+              >
+                Answer
+              </Text>
+            )}
+            <TouchableOpacity onPress={() => setUserPressed(!userPressed)}>
+              <Text style={{ fontSize: 20 }}>
+                {isLoading
+                  ? 'Loading...'
+                  : userPressed
+                  ? data?.flashcard_back
+                  : data?.flashcard_front}
+              </Text>
+            </TouchableOpacity>
           </View>
           <View style={{ flexDirection: 'column' }}>
             <Text style={{ fontSize: 15, marginBottom: 3 }}>
